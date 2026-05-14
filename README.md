@@ -1,11 +1,9 @@
 ## Entrega 2
 
-IIC2182 – Interfaces y Experiencia de Usuario
+IIC2182 - Interfaces y Experiencia de Usuario
 
-Mario Ernst
-
-Nicolás Hörmann
-
+Mario Ernst  
+Nicolás Hörmann  
 Joaquín Lorca
 
 ### Rediseño de Emol
@@ -17,72 +15,46 @@ Joaquín Lorca
 
 ## Cómo correr la app
 
-1. Instalar dependencias:
-
 ```bash
 pnpm install
-```
-
-2. Ejecutar en modo desarrollo:
-
-```bash
 pnpm dev
 ```
 
-3. Abrir en el navegador:
-
-- http://localhost:3000
+Luego abrir http://localhost:3000.
 
 ## Scripts disponibles
 
-- Desarrollo:
-
-```bash
-pnpm dev
-```
-
-- Build de producción:
-
-```bash
-pnpm build
-```
-
-- Ejecutar build en producción:
-
-```bash
-pnpm start
-```
-
-- Lint:
-
-```bash
-pnpm lint
-```
-
-Nota: Si `pnpm lint` falla por `eslint` no reconocido, instala ESLint en el proyecto o en tu entorno.
+- `pnpm dev`: servidor de desarrollo.
+- `pnpm typecheck`: validación estricta de TypeScript.
+- `pnpm build`: build de producción.
+- `pnpm start`: sirve la build de producción.
 
 ## Tecnologías usadas
 
-- Next.js 16 (App Router)
+- Next.js 16 con App Router
 - React 19
-- TypeScript 5
+- TypeScript 5 en modo estricto
 - Tailwind CSS 4
-- Radix UI (componentes accesibles)
-- Lucide React (iconografía)
-- React Hook Form + Zod (formularios y validación)
-- Vercel Analytics
+- Lucide React para iconografía
+- Radix Slot solo para el patrón `asChild` del botón base
 
 ## Estructura principal
 
-- `app/`: páginas y layout de Next.js
-- `components/emol/`: componentes de UI del sitio de noticias
-- `components/ui/`: biblioteca de componentes base
-- `styles/` y `app/globals.css`: estilos globales
-- `public/`: recursos estáticos
+- `app/`: rutas, layout y composición de Server Components.
+- `components/emol/`: componentes de la experiencia de noticias.
+- `components/ui/`: componentes base reutilizables mínimos.
+- `hooks/`: hooks reutilizables para estado de UI.
+- `lib/`: utilidades, tipos y datos tipados de noticias.
+- `public/`: recursos estáticos.
+
+## Estrategia de rendering
+
+- `/`: portada estática. La información usada por la maqueta está tipada en `lib/news.ts`, por lo que la página puede prerenderizarse.
+- `/noticia/[id]`: SSR bajo demanda. La ruta depende de `params` y `searchParams` para alternar entre vista normal y modo lectura.
+- Componentes client-side: `TopBar`, `NewsSection`, `Newsletter` y `ArticleComments`, porque manejan menú/búsqueda, carrusel horizontal o formularios con estado.
+- Componentes server-side: layout, portada, hero, cards, footer y contenido principal de noticia, porque no necesitan estado del navegador.
 
 ## Modo lectura
-
-La vista de noticia incluye un modo lectura sin distracciones.
 
 - Vista normal: `/noticia/1`
 - Modo lectura: `/noticia/1?vista=lectura`

@@ -1,6 +1,5 @@
+import type { Category } from "@/lib/news";
 import { cn } from "@/lib/utils";
-
-type Category = "chile" | "mundo" | "economia" | "deportes";
 
 interface CategoryTagProps {
   category: Category;
@@ -10,7 +9,7 @@ interface CategoryTagProps {
 
 const categoryStyles: Record<
   Category,
-  { bg: string; text: string; label: string }
+  { bg: string; label: string; text: string }
 > = {
   chile: {
     bg: "bg-[#fc0029]/10",
@@ -23,13 +22,13 @@ const categoryStyles: Record<
     label: "Mundo",
   },
   economia: {
-    bg: "bg-[#34A853]/10",
-    text: "text-[#34A853]",
+    bg: "bg-[#34a853]/10",
+    text: "text-[#34a853]",
     label: "Economía",
   },
   deportes: {
-    bg: "bg-[#F9AB00]/10",
-    text: "text-[#F9AB00]",
+    bg: "bg-[#f9ab00]/10",
+    text: "text-[#f9ab00]",
     label: "Deportes",
   },
 };

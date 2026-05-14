@@ -1,77 +1,37 @@
 import Image from "next/image";
 import Link from "next/link";
-import { TopBar } from "@/components/emol/top-bar";
-import { CategoryTag } from "@/components/emol/category-tag";
-import { Footer } from "@/components/emol/footer";
 import {
-  Clock,
-  MessageCircle,
-  Share2,
-  Facebook,
-  Twitter,
   ArrowLeft,
   BookOpen,
+  Clock,
+  Facebook,
+  MessageCircle,
   Newspaper,
+  Share2,
+  Twitter,
 } from "lucide-react";
+import { ArticleComments } from "@/components/emol/article-comments";
+import { CategoryTag } from "@/components/emol/category-tag";
+import { Footer } from "@/components/emol/footer";
+import { TopBar } from "@/components/emol/top-bar";
 import { Button } from "@/components/ui/button";
+import { getArticleById, relatedNews } from "@/lib/news";
 
-// Mock data - in a real app this would come from a database/API
-const articleData = {
-  id: 1,
-  title:
-    'Tras alto al fuego: Irán dice que será posible "el paso seguro" por el estrecho de Ormuz durante dos semanas',
-  subtitle:
-    '"Nuestras poderosas Fuerzas Armadas suspenderán sus operaciones defensivas", subrayó el jefe de la diplomacia iraní.',
-  category: "mundo" as const,
-  author: "Redacción Emol",
-  date: "8 de abril de 2026",
-  time: "20:25",
-  comments: 93,
-  image: "https://picsum.photos/seed/hero/1200/600",
-  content: [
-    "El ministro de Relaciones Exteriores de Irán, Hossein Amir-Abdollahian, anunció que durante las próximas dos semanas se garantizará el paso seguro por el estrecho de Ormuz, una de las rutas marítimas más importantes del mundo para el transporte de petróleo.",
-    '"Nuestras poderosas Fuerzas Armadas suspenderán sus operaciones defensivas durante este período como muestra de buena voluntad", declaró el canciller en una conferencia de prensa celebrada en Teherán.',
-    "Esta decisión llega tras intensas negociaciones diplomáticas mediadas por varios países y organizaciones internacionales, que buscaban reducir las tensiones en la región del Golfo Pérsico.",
-    "El estrecho de Ormuz, ubicado entre Irán y la Península Arábiga, es un punto estratégico por el que transita aproximadamente el 20% del petróleo mundial. Cualquier interrupción en esta vía tiene impactos significativos en los mercados energéticos globales.",
-    "Analistas internacionales han recibido con cautela este anuncio, señalando que el plazo de dos semanas es relativamente corto y que serán necesarios acuerdos más duraderos para estabilizar la situación en la región.",
-    "Por su parte, Estados Unidos y sus aliados en la zona han indicado que monitorearán de cerca el cumplimiento de este compromiso, manteniendo su presencia naval en el área como medida de precaución.",
-  ],
-};
+export const dynamic = "force-dynamic";
 
-const relatedNews = [
-  {
-    id: 2,
-    title: "Trump echa pie atrás y suspende ataque a Irán por dos semanas",
-    category: "mundo" as const,
-    time: "19:30",
-  },
-  {
-    id: 3,
-    title: "Desde el papa a exaliados: Crece presión sobre Trump tras amenazas",
-    category: "mundo" as const,
-    time: "18:45",
-  },
-  {
-    id: 4,
-    title: "Ultimátum: Forman cadenas humanas y dan pastillas de yodo",
-    category: "mundo" as const,
-    time: "17:20",
-  },
-];
+interface ArticlePageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ vista?: string }>;
+}
 
 export default async function ArticlePage({
   params,
   searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ vista?: string }>;
-}) {
+}: ArticlePageProps) {
   const { id } = await params;
   const { vista } = await searchParams;
+  const article = getArticleById(id);
   const isReadingMode = vista === "lectura";
-
-  // In a real app, fetch the article based on id
-  const article = articleData;
 
   return (
     <div
@@ -86,16 +46,15 @@ export default async function ArticlePage({
       <main
         className={
           isReadingMode
-            ? "max-w-3xl mx-auto px-6 py-10"
-            : "max-w-4xl mx-auto px-4 py-8"
+            ? "mx-auto max-w-3xl px-6 py-10"
+            : "mx-auto max-w-4xl px-4 py-8"
         }
       >
-        {/* Top controls */}
         <div className="mb-6 flex items-center justify-between gap-3">
           {!isReadingMode ? (
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Volver a portada</span>
@@ -107,7 +66,7 @@ export default async function ArticlePage({
           {isReadingMode ? (
             <Link
               href={`/noticia/${id}`}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
               <Newspaper className="h-4 w-4" />
               Vista normal
@@ -115,7 +74,7 @@ export default async function ArticlePage({
           ) : (
             <Link
               href={`/noticia/${id}?vista=lectura`}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
               <BookOpen className="h-4 w-4" />
               Modo lectura
@@ -123,13 +82,12 @@ export default async function ArticlePage({
           )}
         </div>
 
-        {/* Article Header */}
         <article>
           <div className="mb-6">
             {!isReadingMode && (
-              <div className="flex items-center gap-3 mb-4">
+              <div className="mb-4 flex items-center gap-3">
                 <CategoryTag category={article.category} />
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   <span>{article.time}</span>
                   <span className="text-border">|</span>
@@ -138,15 +96,15 @@ export default async function ArticlePage({
               </div>
             )}
 
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary leading-tight text-balance mb-4">
+            <h1 className="mb-4 text-balance text-3xl font-bold leading-tight text-primary md:text-4xl lg:text-5xl">
               {article.title}
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6">
+            <p className="mb-6 text-lg leading-relaxed text-muted-foreground md:text-xl">
               {article.subtitle}
             </p>
 
-            <div className="flex items-center justify-between border-y border-border py-4 mb-6">
+            <div className="mb-6 flex items-center justify-between border-y border-border py-4">
               <span className="text-sm text-muted-foreground">
                 Por{" "}
                 <span className="font-medium text-foreground">
@@ -164,13 +122,25 @@ export default async function ArticlePage({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Compartir en Facebook"
+                    >
                       <Facebook className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Compartir en X"
+                    >
                       <Twitter className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Copiar enlace"
+                    >
                       <Share2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -179,8 +149,7 @@ export default async function ArticlePage({
             </div>
           </div>
 
-          {/* Featured Image */}
-          <div className="relative aspect-video overflow-hidden rounded-lg mb-8">
+          <div className="relative mb-8 aspect-video overflow-hidden rounded-lg">
             <Image
               src={article.image}
               alt={article.title}
@@ -190,19 +159,14 @@ export default async function ArticlePage({
             />
           </div>
 
-          {/* Article Content */}
-          <div
-            className={
-              isReadingMode ? "max-w-none" : "prose prose-lg max-w-none"
-            }
-          >
-            {article.content.map((paragraph, index) => (
+          <div className={isReadingMode ? "max-w-none" : "max-w-none"}>
+            {article.content.map((paragraph) => (
               <p
-                key={index}
+                key={paragraph}
                 className={
                   isReadingMode
-                    ? "leading-9 mb-8 text-lg md:text-xl text-[#1e1e1e]"
-                    : "text-foreground leading-relaxed mb-6 text-base md:text-lg"
+                    ? "mb-8 text-lg leading-9 text-[#1e1e1e] md:text-xl"
+                    : "mb-6 text-base leading-relaxed text-foreground md:text-lg"
                 }
               >
                 {paragraph}
@@ -211,55 +175,13 @@ export default async function ArticlePage({
           </div>
 
           {!isReadingMode && (
-            <section className="mt-12 pt-8 border-t border-border">
-              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                <MessageCircle className="h-6 w-6" />
-                Comentarios ({article.comments})
-              </h2>
-
-              <div className="bg-card rounded-lg p-6 mb-6">
-                <textarea
-                  placeholder="Escribe tu comentario..."
-                  className="w-full h-24 bg-background border border-border rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                />
-                <div className="flex justify-end mt-4">
-                  <Button>Publicar comentario</Button>
-                </div>
-              </div>
-
-              {/* Sample comments */}
-              <div className="flex flex-col gap-4">
-                {[1, 2, 3].map((_, index) => (
-                  <div key={index} className="bg-card rounded-lg p-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                        <span className="text-sm font-medium text-muted-foreground">
-                          U
-                        </span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-foreground">
-                          Usuario{index + 1}
-                        </span>
-                        <span className="text-muted-foreground text-sm ml-2">
-                          hace {index + 1}h
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-muted-foreground">
-                      Este es un comentario de ejemplo. En una implementación
-                      real, los comentarios vendrían de una base de datos.
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
+            <ArticleComments initialCommentsCount={article.comments} />
           )}
         </article>
 
         {!isReadingMode && (
-          <section className="mt-12 pt-8 border-t border-border">
-            <h2 className="text-2xl font-bold text-foreground mb-6">
+          <section className="mt-12 border-t border-border pt-8">
+            <h2 className="mb-6 text-2xl font-bold text-foreground">
               Noticias relacionadas
             </h2>
 
@@ -268,16 +190,16 @@ export default async function ArticlePage({
                 <Link
                   key={news.id}
                   href={`/noticia/${news.id}`}
-                  className="group flex items-start gap-3 py-4 border-b border-border last:border-0"
+                  className="group flex items-start gap-3 border-b border-border py-4 last:border-0"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <CategoryTag category={news.category} size="sm" />
-                      <span className="text-muted-foreground text-xs">
+                      <span className="text-xs text-muted-foreground">
                         {news.time}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-foreground leading-snug group-hover:text-primary transition-colors">
+                    <h3 className="font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
                       {news.title}
                     </h3>
                   </div>

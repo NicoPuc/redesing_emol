@@ -1,52 +1,42 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Menu, X } from "lucide-react";
+import Link from "next/link";
+import { Menu, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-const navLinks = [
-  { label: "Chile", href: "#chile" },
-  { label: "Mundo", href: "#mundo" },
-  { label: "Economía", href: "#economia" },
-  { label: "Deportes", href: "#deportes" },
-  { label: "Tendencias", href: "#tendencias" },
-];
+import { useDisclosure } from "@/hooks/use-disclosure";
+import { navLinks } from "@/lib/news";
 
 export function TopBar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const menu = useDisclosure();
+  const search = useDisclosure();
 
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <a href="/" className="flex items-center">
-            <span className="inline-flex items-end gap-1 text-3xl md:text-4xl font-bold leading-none">
+    <header className="sticky top-0 z-50 border-b border-border bg-background">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex h-20 items-center justify-between">
+          <Link href="/" className="flex items-center" aria-label="Ir a portada">
+            <span className="inline-flex items-end gap-1 text-3xl font-bold leading-none md:text-4xl">
               <span className="text-[#004da6]">emol</span>
-              <span className="inline-block h-[0.32em] w-[0.32em] rounded-[0.12em] bg-[#fc0029] mb-[0.08em]" />
+              <span className="mb-[0.08em] inline-block h-[0.32em] w-[0.32em] rounded-[0.12em] bg-[#fc0029]" />
             </span>
-          </a>
+          </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden items-center gap-6 md:flex">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
-          {/* Actions */}
           <div className="flex items-center gap-2">
-            {/* Search */}
-            <div className="hidden md:flex items-center">
-              {isSearchOpen ? (
+            <div className="hidden items-center md:flex">
+              {search.isOpen ? (
                 <div className="flex items-center gap-2">
                   <Input
                     type="search"
@@ -57,7 +47,8 @@ export function TopBar() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => setIsSearchOpen(false)}
+                    onClick={search.close}
+                    aria-label="Cerrar búsqueda"
                   >
                     <X className="h-5 w-5" />
                   </Button>
@@ -66,31 +57,32 @@ export function TopBar() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsSearchOpen(true)}
+                  onClick={search.open}
+                  aria-label="Abrir búsqueda"
                 >
                   <Search className="h-5 w-5" />
                 </Button>
               )}
             </div>
 
-            {/* Mobile Search */}
             <Button
               variant="ghost"
               size="icon"
               className="md:hidden"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              onClick={search.toggle}
+              aria-label="Buscar"
             >
               <Search className="h-5 w-5" />
             </Button>
 
-            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="icon"
               className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={menu.toggle}
+              aria-label="Abrir menú"
             >
-              {isMenuOpen ? (
+              {menu.isOpen ? (
                 <X className="h-5 w-5" />
               ) : (
                 <Menu className="h-5 w-5" />
@@ -99,9 +91,8 @@ export function TopBar() {
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
-        {isSearchOpen && (
-          <div className="md:hidden pb-4">
+        {search.isOpen && (
+          <div className="pb-4 md:hidden">
             <Input
               type="search"
               placeholder="Buscar noticias..."
@@ -111,19 +102,18 @@ export function TopBar() {
           </div>
         )}
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden pb-4 border-t border-border pt-4">
+        {menu.isOpen && (
+          <nav className="border-t border-border pb-4 pt-4 md:hidden">
             <div className="flex flex-col gap-3">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
                   href={link.href}
-                  className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
-                  onClick={() => setIsMenuOpen(false)}
+                  className="py-2 text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  onClick={menu.close}
                 >
                   {link.label}
-                </a>
+                </Link>
               ))}
             </div>
           </nav>
