@@ -23,6 +23,10 @@
   --input: #e6e6e6;
   --ring: #004da6;
   --radius: 0.5rem;
+  --footer: #111111;
+  --footer-foreground: #ffffff;
+  --footer-muted: #d6d6d6;
+  --footer-border: #5c5c5c;
 
   /* Custom emol colors */
   --tag-chile: #fc0029;
@@ -54,6 +58,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-footer: var(--footer);
+  --color-footer-foreground: var(--footer-foreground);
+  --color-footer-muted: var(--footer-muted);
+  --color-footer-border: var(--footer-border);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

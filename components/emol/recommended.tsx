@@ -1,7 +1,18 @@
-import { recommendedNews } from "@/lib/news";
+import { getRecommendedNews } from "@/lib/news";
 import { NewsCard } from "./news-card";
 
-export function Recommended() {
+interface RecommendedProps {
+  now?: Date;
+  hrefSuffix?: string;
+}
+
+export function Recommended({ now, hrefSuffix = "" }: RecommendedProps) {
+  const recommendedNews = getRecommendedNews(now);
+
+  if (recommendedNews.length === 0) {
+    return null;
+  }
+
   return (
     <section>
       <h2 className="mb-6 text-xl font-bold text-foreground">
@@ -9,7 +20,7 @@ export function Recommended() {
       </h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {recommendedNews.map((news) => (
-          <NewsCard key={news.id} news={news} />
+          <NewsCard key={news.id} news={news} hrefSuffix={hrefSuffix} />
         ))}
       </div>
     </section>

@@ -1,15 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Clock, MessageCircle } from "lucide-react";
 import type { NewsPreview } from "@/lib/news";
 import { CategoryTag } from "./category-tag";
+import { CommentCount } from "./comment-count";
 
 interface NewsCardProps {
   news: NewsPreview;
   variant?: "default" | "compact";
+  hrefSuffix?: string;
 }
 
-export function NewsCard({ news, variant = "default" }: NewsCardProps) {
-  const href = `/noticia/${news.id}`;
+export function NewsCard({
+  news,
+  variant = "default",
+  hrefSuffix = "",
+}: NewsCardProps) {
+  const href = `/noticia/${news.id}${hrefSuffix}`;
 
   if (variant === "compact") {
     return (
@@ -27,9 +34,11 @@ export function NewsCard({ news, variant = "default" }: NewsCardProps) {
           <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
             {news.title}
           </h3>
-          <span className="mt-1 block text-xs text-muted-foreground">
-            {news.time}
-          </span>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+            <span>{news.time}</span>
+            <span>·</span>
+            <span>{news.readingMinutes} min</span>
+          </div>
         </div>
       </Link>
     );
@@ -49,7 +58,7 @@ export function NewsCard({ news, variant = "default" }: NewsCardProps) {
         />
       </div>
       <div className="p-4">
-        <div className="mb-2 flex items-center gap-2">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
           <CategoryTag category={news.category} />
           <span className="text-xs text-muted-foreground">{news.time}</span>
         </div>
@@ -61,6 +70,16 @@ export function NewsCard({ news, variant = "default" }: NewsCardProps) {
             {news.description}
           </p>
         )}
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" />
+            {news.readingMinutes} min de lectura
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <MessageCircle className="h-3.5 w-3.5" />
+            <CommentCount articleId={news.id} />
+          </span>
+        </div>
       </div>
     </Link>
   );
