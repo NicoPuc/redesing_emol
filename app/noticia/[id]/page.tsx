@@ -1,27 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  BookOpen,
-  Clock,
-  Facebook,
-  MessageCircle,
-  Newspaper,
-  Share2,
-  Twitter,
-} from "lucide-react";
+import { ArrowLeft, BookOpen, Newspaper } from "lucide-react";
+import { ArticleAiSummary } from "@/components/emol/article-ai-summary";
 import { ArticleComments } from "@/components/emol/article-comments";
-import { CategoryTag } from "@/components/emol/category-tag";
+import { ArticleFollowup } from "@/components/emol/article-followup";
+import { ArticleHeader } from "@/components/emol/article-header";
 import { Footer } from "@/components/emol/footer";
 import { TopBar } from "@/components/emol/top-bar";
-import { Button } from "@/components/ui/button";
-import { getArticleById, relatedNews } from "@/lib/news";
+import {
+  getArticleById,
+  getMockDateFromTime,
+  getRecommendedNewsForArticle,
+  getRelatedNews,
+  withArticleParams,
+  withMockTime,
+} from "@/lib/news";
 
 export const dynamic = "force-dynamic";
 
 interface ArticlePageProps {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ vista?: string }>;
+  searchParams: Promise<{ vista?: string; hora?: string }>;
 }
 
 export default async function ArticlePage({
@@ -29,9 +28,15 @@ export default async function ArticlePage({
   searchParams,
 }: ArticlePageProps) {
   const { id } = await params;
-  const { vista } = await searchParams;
-  const article = getArticleById(id);
+  const { vista, hora } = await searchParams;
+  const now = getMockDateFromTime(hora);
+  const article = getArticleById(id, now);
+  const relatedNews = getRelatedNews(article.id, now);
+  const recommendedNews = getRecommendedNewsForArticle(article.id, now);
   const isReadingMode = vista === "lectura";
+  const hrefSuffix = withMockTime(hora);
+  const normalParams = withArticleParams({ hora });
+  const readingParams = withArticleParams({ hora, vista: "lectura" });
 
   return (
     <div
@@ -41,7 +46,7 @@ export default async function ArticlePage({
           : "min-h-screen bg-background"
       }
     >
-      {!isReadingMode && <TopBar />}
+      {!isReadingMode && <TopBar hrefSuffix={hrefSuffix} hora={hora} />}
 
       <main
         className={
@@ -53,7 +58,7 @@ export default async function ArticlePage({
         <div className="mb-6 flex items-center justify-between gap-3">
           {!isReadingMode ? (
             <Link
-              href="/"
+              href={`/${hrefSuffix}`}
               className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -65,7 +70,7 @@ export default async function ArticlePage({
 
           {isReadingMode ? (
             <Link
-              href={`/noticia/${id}`}
+              href={`/noticia/${id}${normalParams}`}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
               <Newspaper className="h-4 w-4" />
@@ -73,7 +78,7 @@ export default async function ArticlePage({
             </Link>
           ) : (
             <Link
-              href={`/noticia/${id}?vista=lectura`}
+              href={`/noticia/${id}${readingParams}`}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
             >
               <BookOpen className="h-4 w-4" />
@@ -83,71 +88,7 @@ export default async function ArticlePage({
         </div>
 
         <article>
-          <div className="mb-6">
-            {!isReadingMode && (
-              <div className="mb-4 flex items-center gap-3">
-                <CategoryTag category={article.category} />
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>{article.time}</span>
-                  <span className="text-border">|</span>
-                  <span>{article.date}</span>
-                </div>
-              </div>
-            )}
-
-            <h1 className="mb-4 text-balance text-3xl font-bold leading-tight text-primary md:text-4xl lg:text-5xl">
-              {article.title}
-            </h1>
-
-            <p className="mb-6 text-lg leading-relaxed text-muted-foreground md:text-xl">
-              {article.subtitle}
-            </p>
-
-            <div className="mb-6 flex items-center justify-between border-y border-border py-4">
-              <span className="text-sm text-muted-foreground">
-                Por{" "}
-                <span className="font-medium text-foreground">
-                  {article.author}
-                </span>
-              </span>
-
-              {!isReadingMode && (
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <MessageCircle className="h-5 w-5" />
-                    <span className="font-medium">
-                      {article.comments} comentarios
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label="Compartir en Facebook"
-                    >
-                      <Facebook className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label="Compartir en X"
-                    >
-                      <Twitter className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label="Copiar enlace"
-                    >
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          <ArticleHeader article={article} isReadingMode={isReadingMode} />
 
           <div className="relative mb-8 aspect-video overflow-hidden rounded-lg">
             <Image
@@ -158,6 +99,8 @@ export default async function ArticlePage({
               priority
             />
           </div>
+
+          <ArticleAiSummary article={article} />
 
           <div className={isReadingMode ? "max-w-none" : "max-w-none"}>
             {article.content.map((paragraph) => (
@@ -175,42 +118,20 @@ export default async function ArticlePage({
           </div>
 
           {!isReadingMode && (
-            <ArticleComments initialCommentsCount={article.comments} />
+            <ArticleComments articleId={article.id} />
           )}
         </article>
 
         {!isReadingMode && (
-          <section className="mt-12 border-t border-border pt-8">
-            <h2 className="mb-6 text-2xl font-bold text-foreground">
-              Noticias relacionadas
-            </h2>
-
-            <div className="flex flex-col gap-4">
-              {relatedNews.map((news) => (
-                <Link
-                  key={news.id}
-                  href={`/noticia/${news.id}`}
-                  className="group flex items-start gap-3 border-b border-border py-4 last:border-0"
-                >
-                  <div className="flex-1">
-                    <div className="mb-2 flex items-center gap-2">
-                      <CategoryTag category={news.category} size="sm" />
-                      <span className="text-xs text-muted-foreground">
-                        {news.time}
-                      </span>
-                    </div>
-                    <h3 className="font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
-                      {news.title}
-                    </h3>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
+          <ArticleFollowup
+            relatedNews={relatedNews}
+            recommendedNews={recommendedNews}
+            hrefSuffix={hrefSuffix}
+          />
         )}
       </main>
 
-      {!isReadingMode && <Footer />}
+      {!isReadingMode && <Footer hrefSuffix={hrefSuffix} />}
     </div>
   );
 }

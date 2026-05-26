@@ -1,20 +1,31 @@
 import Image from "next/image";
 import Link from "next/link";
-import { heroArticle } from "@/lib/news";
+import { Clock } from "lucide-react";
+import { getHeroArticle } from "@/lib/news";
+import { CategoryTag } from "./category-tag";
 
-export function Hero() {
+interface HeroProps {
+  now?: Date;
+  hrefSuffix?: string;
+}
+
+export function Hero({ now, hrefSuffix = "" }: HeroProps) {
+  const heroArticle = getHeroArticle(now);
+
   return (
     <section>
       <div className="mb-3 flex items-center justify-between gap-4">
-        <span className="text-sm font-semibold uppercase tracking-wide text-[#004da6]">
-          Mundo
-        </span>
-        <div className="text-right text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Última actualización · Hoy 08:45
+        <CategoryTag category={heroArticle.category} />
+        <div className="flex items-center gap-1.5 text-right text-xs font-medium text-muted-foreground">
+          <Clock className="h-3.5 w-3.5" />
+          {heroArticle.time} · {heroArticle.readingMinutes} min
         </div>
       </div>
 
-      <Link href={`/noticia/${heroArticle.id}`} className="group block">
+      <Link
+        href={`/noticia/${heroArticle.id}${hrefSuffix}`}
+        className="group block"
+      >
         <div className="relative mb-4 aspect-[16/10] overflow-hidden rounded-lg">
           <Image
             src={heroArticle.image}
@@ -37,6 +48,9 @@ export function Hero() {
         <h1 className="text-balance text-2xl font-bold leading-tight text-primary group-hover:underline md:hidden">
           {heroArticle.title}
         </h1>
+        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground md:hidden">
+          {heroArticle.description}
+        </p>
       </Link>
     </section>
   );

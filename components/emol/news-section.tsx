@@ -10,6 +10,7 @@ interface NewsSectionProps {
   title: string;
   category: Category;
   news: NewsPreview[];
+  hrefSuffix?: string;
 }
 
 const categoryColors: Record<Category, string> = {
@@ -19,8 +20,17 @@ const categoryColors: Record<Category, string> = {
   deportes: "bg-[#f9ab00]",
 };
 
-export function NewsSection({ title, category, news }: NewsSectionProps) {
+export function NewsSection({
+  title,
+  category,
+  news,
+  hrefSuffix = "",
+}: NewsSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  if (news.length === 0) {
+    return null;
+  }
 
   const scroll = (direction: "left" | "right") => {
     scrollRef.current?.scrollBy({
@@ -66,7 +76,7 @@ export function NewsSection({ title, category, news }: NewsSectionProps) {
             key={item.id}
             className="w-[85vw] max-w-sm flex-shrink-0 snap-center md:w-72"
           >
-            <NewsCard news={item} />
+            <NewsCard news={item} hrefSuffix={hrefSuffix} />
           </div>
         ))}
       </div>
