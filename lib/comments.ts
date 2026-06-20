@@ -12,7 +12,7 @@ export interface ArticleComment {
   createdAtLabel?: string;
 }
 
-const userNames = [
+export const userNames = [
   "Isidora Vega",
   "Tomás Herrera",
   "Antonia Rivas",
@@ -34,10 +34,6 @@ const seedBodies = [
 ];
 
 export const commentsUpdatedEvent = "emol:comments-updated";
-
-export function commentsStorageKey(articleId: number) {
-  return `emol:article-comments:v1:${articleId}`;
-}
 
 function seedTimeLabel(index: number) {
   const minutes = (index + 1) * 45;
@@ -66,10 +62,6 @@ export function getSeededComments(articleId: number): ArticleComment[] {
   });
 }
 
-export function getSeededCommentCount(articleId: number) {
-  return getSeededComments(articleId).length;
-}
-
 export function randomCommentUser(): CommentUser {
   const index = Math.floor(Math.random() * userNames.length);
   return {
@@ -87,7 +79,7 @@ export function commentInitials(name: string) {
     .toUpperCase();
 }
 
-export function relativeCommentTime(value: string) {
+export function relativeCommentTime(value: string | Date) {
   const diff = Date.now() - new Date(value).getTime();
   const minutes = Math.max(0, Math.floor(diff / 60000));
 

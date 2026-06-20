@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Clock, MessageCircle } from "lucide-react";
 import type { NewsPreview } from "@/lib/news";
 import { CategoryTag } from "./category-tag";
-import { CommentCount } from "./comment-count";
 
 interface NewsCardProps {
   news: NewsPreview;
@@ -77,7 +76,7 @@ export function NewsCard({
           </span>
           <span className="inline-flex items-center gap-1">
             <MessageCircle className="h-3.5 w-3.5" />
-            <CommentCount articleId={news.id} />
+            {news.commentsCount}
           </span>
         </div>
       </div>

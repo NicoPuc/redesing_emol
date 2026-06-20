@@ -37,6 +37,7 @@ export interface DailySchedule {
   totalCount: number;
   currentTime: string;
   nextUpdate?: string;
+  nextUpdateDelayMs?: number;
   nextTitle?: string;
   upcoming: Array<Pick<ArticleSeed, "id" | "title" | "publishedAt" | "category">>;
 }

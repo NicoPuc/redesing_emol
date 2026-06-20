@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { ArrowLeft, BookOpen, Newspaper } from "lucide-react";
 import { ArticleAiSummary } from "@/components/emol/article-ai-summary";
 import { ArticleComments } from "@/components/emol/article-comments";
@@ -8,31 +9,44 @@ import { ArticleHeader } from "@/components/emol/article-header";
 import { Footer } from "@/components/emol/footer";
 import { TopBar } from "@/components/emol/top-bar";
 import {
-  getArticleById,
-  getMockDateFromTime,
-  getRecommendedNewsForArticle,
-  getRelatedNews,
   withArticleParams,
   withMockTime,
 } from "@/lib/news";
-
-export const dynamic = "force-dynamic";
+import { createTRPCCaller } from "@/trpc/server";
+import { notFound } from "next/navigation";
+import { connection } from "next/server";
 
 interface ArticlePageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ vista?: string; hora?: string }>;
 }
 
+export const maxDuration = 300;
+
 export default async function ArticlePage({
   params,
   searchParams,
 }: ArticlePageProps) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <ArticleContent params={params} searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ArticleContent({ params, searchParams }: ArticlePageProps) {
+  await connection();
   const { id } = await params;
   const { vista, hora } = await searchParams;
-  const now = getMockDateFromTime(hora);
-  const article = getArticleById(id, now);
-  const relatedNews = getRelatedNews(article.id, now);
-  const recommendedNews = getRecommendedNewsForArticle(article.id, now);
+  const api = await createTRPCCaller();
+  const article = await api.news.byId({ id: Number(id), hora });
+  if (!article) {
+    notFound();
+  }
+  const { relatedNews, recommendedNews } = await api.news.followup({
+    articleId: article.id,
+    hora,
+  });
   const isReadingMode = vista === "lectura";
   const hrefSuffix = withMockTime(hora);
   const normalParams = withArticleParams({ hora });
@@ -42,7 +56,7 @@ export default async function ArticlePage({
     <div
       className={
         isReadingMode
-          ? "min-h-screen bg-[#f7f3eb] text-[#1e1e1e]"
+          ? "min-h-screen bg-reading-background text-reading-foreground"
           : "min-h-screen bg-background"
       }
     >
@@ -88,19 +102,33 @@ export default async function ArticlePage({
         </div>
 
         <article>
-          <ArticleHeader article={article} isReadingMode={isReadingMode} />
+          <ArticleHeader
+            article={article}
+            isReadingMode={isReadingMode}
+            aiSummary={
+              <Suspense
+                fallback={
+                  <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-muted-foreground">
+                    Generando resumen inteligente...
+                  </div>
+                }
+              >
+                <ArticleAiSummary article={article} hora={hora} />
+              </Suspense>
+            }
+          />
 
-          <div className="relative mb-8 aspect-video overflow-hidden rounded-lg">
-            <Image
-              src={article.image}
-              alt={article.title}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-
-          <ArticleAiSummary article={article} />
+          {!isReadingMode && (
+            <div className="relative mb-8 aspect-video overflow-hidden rounded-lg">
+              <Image
+                src={article.image}
+                alt={article.title}
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
+          )}
 
           <div className={isReadingMode ? "max-w-none" : "max-w-none"}>
             {article.content.map((paragraph) => (
@@ -108,7 +136,7 @@ export default async function ArticlePage({
                 key={paragraph}
                 className={
                   isReadingMode
-                    ? "mb-8 text-lg leading-9 text-[#1e1e1e] md:text-xl"
+                    ? "mb-8 text-lg leading-9 text-reading-foreground md:text-xl"
                     : "mb-6 text-base leading-relaxed text-foreground md:text-lg"
                 }
               >
@@ -118,17 +146,15 @@ export default async function ArticlePage({
           </div>
 
           {!isReadingMode && (
-            <ArticleComments articleId={article.id} />
+            <ArticleFollowup
+              relatedNews={relatedNews}
+              recommendedNews={recommendedNews}
+              hrefSuffix={hrefSuffix}
+            />
           )}
-        </article>
 
-        {!isReadingMode && (
-          <ArticleFollowup
-            relatedNews={relatedNews}
-            recommendedNews={recommendedNews}
-            hrefSuffix={hrefSuffix}
-          />
-        )}
+          {!isReadingMode && <ArticleComments articleId={article.id} />}
+        </article>
       </main>
 
       {!isReadingMode && <Footer hrefSuffix={hrefSuffix} />}

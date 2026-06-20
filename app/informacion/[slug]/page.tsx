@@ -2,26 +2,20 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Footer } from "@/components/emol/footer";
 import { TopBar } from "@/components/emol/top-bar";
-import { withMockTime } from "@/lib/news";
 import { infoPages, type InfoPageSlug } from "@/lib/site-links";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
 interface InfoPageProps {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ hora?: string }>;
 }
 
 export function generateStaticParams() {
   return Object.keys(infoPages).map((slug) => ({ slug }));
 }
 
-export default async function InfoPage({ params, searchParams }: InfoPageProps) {
+export default async function InfoPage({ params }: InfoPageProps) {
   const { slug } = await params;
-  const { hora } = await searchParams;
   const page = infoPages[slug as InfoPageSlug];
-  const hrefSuffix = withMockTime(hora);
 
   if (!page) {
     notFound();
@@ -29,11 +23,11 @@ export default async function InfoPage({ params, searchParams }: InfoPageProps) 
 
   return (
     <div className="min-h-screen bg-background">
-      <TopBar hrefSuffix={hrefSuffix} hora={hora} />
+      <TopBar />
 
       <main className="mx-auto max-w-3xl px-4 py-8 md:py-12">
         <Link
-          href={`/${hrefSuffix}`}
+          href="/"
           className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -66,7 +60,7 @@ export default async function InfoPage({ params, searchParams }: InfoPageProps) 
         </article>
       </main>
 
-      <Footer hrefSuffix={hrefSuffix} />
+      <Footer />
     </div>
   );
 }

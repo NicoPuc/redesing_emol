@@ -14,10 +14,10 @@ interface NewsSectionProps {
 }
 
 const categoryColors: Record<Category, string> = {
-  chile: "bg-[#fc0029]",
-  mundo: "bg-[#004da6]",
-  economia: "bg-[#34a853]",
-  deportes: "bg-[#f9ab00]",
+  chile: "bg-tag-chile",
+  mundo: "bg-tag-mundo",
+  economia: "bg-tag-economia",
+  deportes: "bg-tag-deportes",
 };
 
 export function NewsSection({

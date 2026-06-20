@@ -41,7 +41,7 @@ export function Newsletter() {
         </Button>
       </form>
       {isSubscribed && (
-        <p className="mt-3 text-sm font-medium text-[#34a853]">
+        <p className="mt-3 text-sm font-medium text-tag-economia">
           Suscripción registrada.
         </p>
       )}

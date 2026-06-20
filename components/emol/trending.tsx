@@ -1,19 +1,21 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
-import { getTrendingNews } from "@/lib/news";
 
 interface TrendingProps {
-  now?: Date;
+  news: Array<{
+    id: number;
+    title: string;
+    time: string;
+    readingMinutes: number;
+  }>;
   hrefSuffix?: string;
 }
 
-export function Trending({ now, hrefSuffix = "" }: TrendingProps) {
-  const trendingNews = getTrendingNews(now);
-
+export function Trending({ news: trendingNews, hrefSuffix = "" }: TrendingProps) {
   return (
     <section id="tendencias" className="rounded-lg border border-border bg-card p-4 md:p-6">
       <div className="mb-4 flex items-center gap-2">
-        <Zap className="h-5 w-5 text-[#fc0029]" />
+        <Zap className="h-5 w-5 text-tag-chile" />
         <h2 className="text-lg font-bold text-foreground">Último minuto</h2>
       </div>
 

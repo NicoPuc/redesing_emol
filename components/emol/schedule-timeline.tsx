@@ -24,8 +24,8 @@ export function ScheduleTimeline({
           Pauta del día
         </h1>
         <p className="mt-3 text-muted-foreground">
-          Esta vista simula una pauta editorial real: las noticias del día se
-          publican progresivamente según el horario configurado en la maqueta.
+          Las noticias del día se publican progresivamente según el horario
+          definido por la pauta editorial.
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           {schedule.publishedCount} de {schedule.totalCount} noticias publicadas.

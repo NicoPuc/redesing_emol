@@ -12,23 +12,23 @@ const categoryStyles: Record<
   { bg: string; label: string; text: string }
 > = {
   chile: {
-    bg: "bg-[#fc0029]/10",
-    text: "text-[#fc0029]",
+    bg: "bg-tag-chile/10",
+    text: "text-tag-chile",
     label: "Chile",
   },
   mundo: {
-    bg: "bg-[#004da6]/10",
-    text: "text-[#004da6]",
+    bg: "bg-tag-mundo/10",
+    text: "text-tag-mundo",
     label: "Mundo",
   },
   economia: {
-    bg: "bg-[#34a853]/10",
-    text: "text-[#34a853]",
+    bg: "bg-tag-economia/10",
+    text: "text-tag-economia",
     label: "Economía",
   },
   deportes: {
-    bg: "bg-[#f9ab00]/10",
-    text: "text-[#f9ab00]",
+    bg: "bg-tag-deportes/10",
+    text: "text-tag-deportes",
     label: "Deportes",
   },
 };

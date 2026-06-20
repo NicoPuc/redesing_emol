@@ -1,17 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Clock } from "lucide-react";
-import { getHeroArticle } from "@/lib/news";
+import type { Article } from "@/lib/news";
 import { CategoryTag } from "./category-tag";
 
 interface HeroProps {
-  now?: Date;
+  article: Article;
   hrefSuffix?: string;
 }
 
-export function Hero({ now, hrefSuffix = "" }: HeroProps) {
-  const heroArticle = getHeroArticle(now);
-
+export function Hero({ article: heroArticle, hrefSuffix = "" }: HeroProps) {
   return (
     <section>
       <div className="mb-3 flex items-center justify-between gap-4">
@@ -36,7 +34,7 @@ export function Hero({ now, hrefSuffix = "" }: HeroProps) {
           />
 
           <div className="absolute inset-0 z-[1] hidden bg-gradient-to-t from-white/70 via-white/35 to-transparent md:block" />
-          <div className="absolute left-0 top-0 z-10 h-1 w-20 bg-[#004da6]" />
+          <div className="absolute left-0 top-0 z-10 h-1 w-20 bg-primary" />
 
           <div className="absolute bottom-20 left-4 right-4 z-10 hidden md:block lg:bottom-24 lg:left-6 lg:right-6">
             <h1 className="text-balance text-2xl font-bold leading-tight text-primary group-hover:underline lg:text-4xl">

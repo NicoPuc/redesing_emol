@@ -11,7 +11,7 @@ export const infoPages = {
     title: "Sobre nosotros",
     eyebrow: "Empresa",
     summary:
-      "Emol es una maqueta editorial enfocada en noticias móviles, lectura rápida y actualización durante el día.",
+      "Emol es una experiencia editorial enfocada en noticias móviles, lectura rápida y actualización durante el día.",
     sections: [
       {
         title: "Propósito",
@@ -27,15 +27,15 @@ export const infoPages = {
     title: "Contacto",
     eyebrow: "Empresa",
     summary:
-      "Canales simulados para recibir comentarios editoriales, correcciones y consultas de lectores.",
+      "Canales para recibir comentarios editoriales, correcciones y consultas de lectores.",
     sections: [
       {
         title: "Redacción",
-        body: "Para sugerencias de cobertura o correcciones, escribe a redaccion@emol.demo.",
+        body: "Para sugerencias de cobertura o correcciones, escribe a redaccion@emol.cl.",
       },
       {
         title: "Soporte",
-        body: "Para problemas de navegación, comentarios o cuenta, escribe a soporte@emol.demo.",
+        body: "Para problemas de navegación, comentarios o cuenta, escribe a soporte@emol.cl.",
       },
     ],
   },
@@ -47,11 +47,11 @@ export const infoPages = {
     sections: [
       {
         title: "Perfiles",
-        body: "Periodistas, diseñadores, desarrolladores frontend y especialistas de datos pueden sumarse a equipos multidisciplinarios.",
+        body: "Periodistas, diseñadores, ingenieros de producto y especialistas de datos pueden sumarse a equipos multidisciplinarios.",
       },
       {
         title: "Postulación",
-        body: "Envía tu portafolio o CV a talentos@emol.demo indicando el área de interés.",
+        body: "Envía tu portafolio o CV a talentos@emol.cl indicando el área de interés.",
       },
     ],
   },
@@ -63,11 +63,11 @@ export const infoPages = {
     sections: [
       {
         title: "Uso del contenido",
-        body: "Los contenidos de esta maqueta son demostrativos y no representan publicaciones reales.",
+        body: "Los contenidos publicados están protegidos por derechos de autor y pueden actualizarse durante la jornada.",
       },
       {
         title: "Interacción",
-        body: "Los comentarios se guardan localmente en el navegador y deben usarse con respeto hacia otros lectores.",
+        body: "Los comentarios deben mantener un tono respetuoso y ajustarse a las normas de participación.",
       },
     ],
   },
@@ -75,11 +75,11 @@ export const infoPages = {
     title: "Política de privacidad",
     eyebrow: "Legal",
     summary:
-      "Resumen de cómo se tratan datos en esta maqueta sin backend ni cuentas reales.",
+      "Resumen de cómo se tratan datos asociados a funciones editoriales e interacción de lectores.",
     sections: [
       {
-        title: "Datos locales",
-        body: "Los comentarios se almacenan en localStorage por noticia y no se envían a servidores externos.",
+        title: "Datos de interacción",
+        body: "La información enviada por lectores se utiliza para operar las funciones disponibles y mejorar la experiencia.",
       },
       {
         title: "Compartir",
@@ -91,11 +91,11 @@ export const infoPages = {
     title: "Cookies",
     eyebrow: "Legal",
     summary:
-      "Esta maqueta no instala cookies propias para seguimiento publicitario.",
+      "Uso de cookies y tecnologías similares para mantener una experiencia estable y segura.",
     sections: [
       {
-        title: "Persistencia",
-        body: "La persistencia disponible corresponde a localStorage para comentarios y estado de demo.",
+        title: "Preferencias",
+        body: "Algunas preferencias pueden conservarse para facilitar la navegación y mantener continuidad entre visitas.",
       },
       {
         title: "Servicios externos",

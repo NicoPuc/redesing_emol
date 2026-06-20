@@ -1,14 +1,12 @@
-import { getRecommendedNews } from "@/lib/news";
+import type { NewsPreview } from "@/lib/news";
 import { NewsCard } from "./news-card";
 
 interface RecommendedProps {
-  now?: Date;
+  news: NewsPreview[];
   hrefSuffix?: string;
 }
 
-export function Recommended({ now, hrefSuffix = "" }: RecommendedProps) {
-  const recommendedNews = getRecommendedNews(now);
-
+export function Recommended({ news: recommendedNews, hrefSuffix = "" }: RecommendedProps) {
   if (recommendedNews.length === 0) {
     return null;
   }
