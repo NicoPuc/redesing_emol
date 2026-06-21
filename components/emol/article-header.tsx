@@ -1,15 +1,20 @@
 import { Clock, MessageCircle } from "lucide-react";
+import type { ReactNode } from "react";
 import type { Article } from "@/lib/news";
 import { ArticleShareActions } from "./article-share-actions";
 import { CategoryTag } from "./category-tag";
-import { CommentCount } from "./comment-count";
 
 interface ArticleHeaderProps {
   article: Article;
   isReadingMode: boolean;
+  aiSummary?: ReactNode;
 }
 
-export function ArticleHeader({ article, isReadingMode }: ArticleHeaderProps) {
+export function ArticleHeader({
+  article,
+  isReadingMode,
+  aiSummary,
+}: ArticleHeaderProps) {
   return (
     <div className="mb-6">
       {!isReadingMode && (
@@ -34,6 +39,8 @@ export function ArticleHeader({ article, isReadingMode }: ArticleHeaderProps) {
         {article.subtitle}
       </p>
 
+      {aiSummary}
+
       <div className="mb-6 flex flex-col gap-4 border-y border-border py-4 sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 text-sm text-muted-foreground">
           Por <span className="font-medium text-foreground">{article.author}</span>
@@ -44,7 +51,7 @@ export function ArticleHeader({ article, isReadingMode }: ArticleHeaderProps) {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MessageCircle className="h-5 w-5" />
               <span className="font-medium">
-                <CommentCount articleId={article.id} /> comentarios
+                {article.commentsCount} comentarios
               </span>
             </div>
             <ArticleShareActions articleId={article.id} title={article.title} />

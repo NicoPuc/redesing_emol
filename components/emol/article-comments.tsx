@@ -1,49 +1,48 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  type ArticleComment,
   commentInitials,
-  commentsStorageKey,
   commentsUpdatedEvent,
-  getSeededComments,
-  randomCommentUser,
   relativeCommentTime,
 } from "@/lib/comments";
+import { trpcClient } from "@/trpc/client";
 
 interface ArticleCommentsProps {
   articleId: number;
 }
 
-function readStoredComments(articleId: number): ArticleComment[] {
-  try {
-    const raw = window.localStorage.getItem(commentsStorageKey(articleId));
-    if (!raw) {
-      return [];
-    }
-
-    const parsed = JSON.parse(raw) as ArticleComment[];
-    return parsed.filter((comment) => comment.articleId === articleId);
-  } catch {
-    return [];
-  }
+interface CommentView {
+  id: number;
+  articleId: number;
+  authorName: string;
+  body: string;
+  createdAt: Date;
 }
 
 export function ArticleComments({ articleId }: ArticleCommentsProps) {
   const [draft, setDraft] = useState("");
-  const [storedComments, setStoredComments] = useState<ArticleComment[]>([]);
-  const baseComments = useMemo(() => getSeededComments(articleId), [articleId]);
+  const [comments, setComments] = useState<CommentView[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    setStoredComments(readStoredComments(articleId));
+    let isMounted = true;
+
+    trpcClient.comments.list.query({ articleId }).then((items) => {
+      if (isMounted) {
+        setComments(items);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, [articleId]);
 
-  const comments = [...storedComments, ...baseComments];
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const body = draft.trim();
@@ -51,30 +50,21 @@ export function ArticleComments({ articleId }: ArticleCommentsProps) {
       return;
     }
 
-    const nextComments = [
-      {
-        id: Date.now(),
-        articleId,
-        user: randomCommentUser(),
-        body,
-        createdAt: new Date().toISOString(),
-      },
-      ...storedComments,
-    ];
-
-    setStoredComments(nextComments);
-    window.localStorage.setItem(
-      commentsStorageKey(articleId),
-      JSON.stringify(nextComments),
-    );
-    window.setTimeout(() => {
-      window.dispatchEvent(
-        new CustomEvent(commentsUpdatedEvent, {
-          detail: { articleId },
-        }),
-      );
-    }, 0);
-    setDraft("");
+    try {
+      setIsSubmitting(true);
+      const comment = await trpcClient.comments.create.mutate({ articleId, body });
+      setComments((current) => [comment, ...current]);
+      window.setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent(commentsUpdatedEvent, {
+            detail: { articleId },
+          }),
+        );
+      }, 0);
+      setDraft("");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -96,7 +86,7 @@ export function ArticleComments({ articleId }: ArticleCommentsProps) {
         />
         <div className="mt-4 flex justify-end">
           <Button type="submit" className="w-full sm:w-auto">
-            Publicar comentario
+            {isSubmitting ? "Publicando..." : "Publicar comentario"}
           </Button>
         </div>
       </form>
@@ -109,16 +99,15 @@ export function ArticleComments({ articleId }: ArticleCommentsProps) {
           >
             <div className="mb-2 flex items-start gap-3">
               <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                {commentInitials(comment.user.name)}
+                {commentInitials(comment.authorName)}
               </div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="font-medium text-foreground">
-                    {comment.user.name}
+                    {comment.authorName}
                   </span>
                   <span className="text-sm text-muted-foreground">
-                    {comment.createdAtLabel ??
-                      relativeCommentTime(comment.createdAt)}
+                    {relativeCommentTime(comment.createdAt)}
                   </span>
                 </div>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground md:text-base">

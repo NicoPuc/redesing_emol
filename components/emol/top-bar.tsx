@@ -23,8 +23,8 @@ export function TopBar({
             aria-label="Ir a portada"
           >
             <span className="inline-flex items-end gap-1 text-3xl font-bold leading-none md:text-4xl">
-              <span className="text-[#004da6]">emol</span>
-              <span className="mb-[0.08em] inline-block h-[0.32em] w-[0.32em] rounded-[0.12em] bg-[#fc0029]" />
+              <span className="text-primary">emol</span>
+              <span className="mb-[0.08em] inline-block h-[0.32em] w-[0.32em] rounded-[0.12em] bg-tag-chile" />
             </span>
           </Link>
 

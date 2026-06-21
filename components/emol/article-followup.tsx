@@ -17,6 +17,17 @@ export function ArticleFollowup({
   return (
     <>
       <section className="mt-12 border-t border-border pt-8">
+        <h2 className="mb-6 text-3xl font-bold text-foreground">
+          Noticias recomendadas
+        </h2>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          {recommendedNews.map((news) => (
+            <NewsCard key={news.id} news={news} hrefSuffix={hrefSuffix} />
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-12 border-t border-border pt-8">
         <h2 className="mb-6 text-2xl font-bold text-foreground">
           Noticias relacionadas
         </h2>
@@ -42,17 +53,6 @@ export function ArticleFollowup({
                 </h3>
               </div>
             </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-12 border-t border-border pt-8">
-        <h2 className="mb-6 text-2xl font-bold text-foreground">
-          Noticias recomendadas
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {recommendedNews.map((news) => (
-            <NewsCard key={news.id} news={news} hrefSuffix={hrefSuffix} />
           ))}
         </div>
       </section>

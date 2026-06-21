@@ -7,7 +7,7 @@ export const categoryLabels: Record<Category, string> = {
   deportes: "Deportes",
 };
 
-function buildContent(article: ArticleSeed) {
+export function buildContent(article: ArticleSeed) {
   const label = categoryLabels[article.category].toLowerCase();
   return [
     `${article.title}. ${article.description}`,
@@ -21,7 +21,10 @@ export function minutesSinceMidnight(date = new Date()) {
   return date.getHours() * 60 + date.getMinutes();
 }
 
-function formatArticleDate(article: ArticleSeed, now = new Date()) {
+export function formatArticleDate(
+  article: Pick<ArticleSeed, "dayOffset">,
+  now = new Date(),
+) {
   const date = new Date(now);
   date.setDate(date.getDate() + (article.dayOffset ?? 0));
   return new Intl.DateTimeFormat("es-CL", {
@@ -31,7 +34,13 @@ function formatArticleDate(article: ArticleSeed, now = new Date()) {
   }).format(date);
 }
 
-function formatRelativeTime(article: ArticleSeed, now = new Date()) {
+export function formatRelativeTime(
+  article: Pick<
+    ArticleSeed,
+    "publishedAt" | "publishHour" | "publishMinute" | "dayOffset"
+  >,
+  now = new Date(),
+) {
   if ((article.dayOffset ?? 0) < 0) {
     return `Ayer ${article.publishedAt}`;
   }
