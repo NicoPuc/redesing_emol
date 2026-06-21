@@ -9,6 +9,7 @@ import { SearchResults } from "@/components/emol/search-results";
 import { TopBar } from "@/components/emol/top-bar";
 import { Trending } from "@/components/emol/trending";
 import { YesterdayNews } from "@/components/emol/yesterday-news";
+import type { NewsSectionData } from "@/lib/news";
 import { withMockTime } from "@/lib/news";
 import { createTRPCCaller } from "@/trpc/server";
 import { connection } from "next/server";
@@ -65,7 +66,7 @@ async function HomeContent({ searchParams }: HomePageProps) {
               <Editorial />
             </div>
 
-            {homeSections.map((section) => (
+            {homeSections.map((section: NewsSectionData) => (
               <NewsSection
                 key={section.category}
                 title={section.title}
