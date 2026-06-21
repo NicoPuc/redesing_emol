@@ -8,6 +8,7 @@ import { ArticleFollowup } from "@/components/emol/article-followup";
 import { ArticleHeader } from "@/components/emol/article-header";
 import { Footer } from "@/components/emol/footer";
 import { TopBar } from "@/components/emol/top-bar";
+import type { Article } from "@/lib/news";
 import {
   withArticleParams,
   withMockTime,
@@ -39,7 +40,7 @@ async function ArticleContent({ params, searchParams }: ArticlePageProps) {
   const { id } = await params;
   const { vista, hora } = await searchParams;
   const api = await createTRPCCaller();
-  const article = await api.news.byId({ id: Number(id), hora });
+  const article = (await api.news.byId({ id: Number(id), hora })) as Article | null;
   if (!article) {
     notFound();
   }
@@ -131,7 +132,7 @@ async function ArticleContent({ params, searchParams }: ArticlePageProps) {
           )}
 
           <div className={isReadingMode ? "max-w-none" : "max-w-none"}>
-            {article.content.map((paragraph) => (
+            {article.content.map((paragraph: string) => (
               <p
                 key={paragraph}
                 className={
